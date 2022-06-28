@@ -6,11 +6,7 @@ export function UploadSingle(param:FormData,other?:AxiosRequestConfig):Promise<r
   return request.post('/upload_single',param,other)
 }
 export function UploadBase64(param:reqBase64):Promise<resBase>{
-  return request.post('/upload_single_base64',param,{
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  })
+  return request.post('/upload_single_base64',param)
 }
 export function uploadBigCheck(md5Val:string):Promise<resBase>{
   return request.post('/bigFile/check',{md5Val})

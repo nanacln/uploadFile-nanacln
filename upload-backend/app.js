@@ -46,7 +46,7 @@ const delay = function (interval) {
 };
 
 // 基于multiparty插件实现文件上传处理 & form-data解析
-const uploadDir = `${__dirname}/upload`;
+const uploadDir = `${__dirname}/static/upload`;
 const baseDir = path.resolve(__dirname, '../');
 const multipartry_load = function (req, auto) {
 	typeof auto !== 'boolean' ? (auto = false) : null;
@@ -125,6 +125,7 @@ app.post('/upload_single', async (req, res) => {
 });
 
 app.post('/upload_single_base64', async (req, res) => {
+  console.log(req.body,8888);
 	let file = req.body.file;
 	let filename = req.body.filename;
 	let spark = new SparkMD5.ArrayBuffer(); // 根据文件内容,生成一个hash名字
@@ -152,155 +153,8 @@ app.post('/upload_single_base64', async (req, res) => {
 	writeFile(res, path, file, filename, false);
 });
 
-app.post('/upload_single_name', async (req, res) => {
-	try {
-		const { fields, files } = await multipartry_load(req);
-		const file = (files.file && files.file[0]) || {};
-		const filename = (fields.filename && fields.filename[0]) || '';
-		const path = `${uploadDir}/${filename}`;
-		let isExists = false;
-		isExists = await exists(path);
-		if (isExists) {
-			res.send({
-				code: 0,
-				msg: 'file is exists',
-				url: path.replace(baseDir, FONTHOSTNAME),
-			});
-			return;
-		}
-		writeFile(res, path, file, filename, true);
-	} catch (e) {
-		res.send({
-			code: 1,
-			msg: e,
-		});
-	}
-});
 
-app.post('/bigFile', (req, res) => {
-	var body = req.body
-  let type = body.type;
-  let md5Val = body.md5Val||req.query.md5Val;
-  let bigDir = dirPath + "big/";
 
-	if (!md5Val) {
-    return res.json({
-      code: 101,
-      msg: "文件md5值不能为空！",
-      data:''
-    });
-  }
-
-  
-  function check() {
-    let filePath = `${bigDir}${md5Val}`;
-    fs.readdir(filePath, (err, data) => {
-      if (err) {
-        fs.mkdir(filePath, (err) => {
-          if (err) {
-            return res.json({
-              code: 101,
-              msg: "获取失败！",
-              data:[]
-            });
-          } else {
-            return res.json({
-              code: 200,
-              msg: "获取成功！",
-              data:[]
-							
-            });
-          }
-        });
-      } else {
-        return res.json({
-          code: 200,
-          msg: "获取成功！",
-          data,
-					
-        });
-      }
-    });
-  }
-  function upload() {
-		
-    let form = formidable({
-      multiples: true,
-      uploadDir: `${dirPath}big/${md5Val}/`,
-    });
-
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        return res.json(err);
-      }
-			const {current,type}=fields
-			if(type!=='upload'){
-				let msg=upload?'上次类型值错误':"上传类型不能为空！"
-				return res.json({
-					code: 101,
-					msg,
-					data:'',
-				});
-			}
-			if (!current) {
-				return res.json({
-					code: 101,
-					msg: "文件当前分片值不能为空！",
-					data: "",
-				});
-			}
-      let newPath = `${dirPath}big/${md5Val}/${current}`;
-      fs.rename(files.file.filepath, newPath, function (err) {
-        if (err) {
-          return res.json(err);
-        }
-        return res.json({
-          code: 200,
-          msg: "get_succ",
-          data: "",
-        });
-      });
-    });
-  }
-  async function merge(){
-    let ext = req.body.ext;
-    if (!ext) {
-      return res.json({
-          code: 101,
-          msg: '文件后缀不能为空！',
-					data: ''
-      })
-    }
-    
-    let oldPath = `${dirPath}big/${md5Val}`;
-    let newPath = `${dirPath}doc/${md5Val}.${ext}`;
-    let data = await mergeFile(oldPath, newPath);
-    
-    if (data.code == 200) {
-      return res.json({
-        code: 200,
-        msg: '文件合并成功！',
-        data: {
-					url: `/doc/${md5Val}.${ext}`
-				}
-      })
-    } else {
-      return res.json({
-        code: 101,
-        msg: '文件合并失败！',
-        data: data.data.error
-      })
-    }
-  }
-  
-  if (type === "check") {
-    check();
-  } else if (type === "merge"){
-    merge()
-  }else{
-		upload()
-	}
-})
 app.post('/bigFile/check',(req,res)=>{
 	const body = req.body
   const md5Val = body.md5Val
