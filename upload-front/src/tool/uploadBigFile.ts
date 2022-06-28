@@ -1,8 +1,7 @@
-import axios from 'axios'
-import SparkMD5 from 'spark-md5'
-axios.defaults.baseURL = 'http://127.0.0.1:8880'
 
-// import {uploadBigCheck}from './api'
+import SparkMD5 from 'spark-md5'
+
+import {uploadBigCheck,uploadBigUp,uploadBigMerge}from './api'
 function uploadBigHook() {
   let ext = '',
     fileArr:Array<Blob> = [],
@@ -51,17 +50,9 @@ function uploadBigHook() {
     });
   }
   async function checkUpload() {
-    const param={
-      md5Val
-    }
-    const data = await axios({
-      url: `/bigFile/check`,
-      method: "post",
-      data: param,
-    });
-    // const data=await uploadBigCheck(md5Val)
-    if (data.data.code === 200) {
-      uploadChuncks = data.data.data as number[]
+    const data=await uploadBigCheck(md5Val)
+    if (data.code === 200) {
+      uploadChuncks = data.data as number[]
       uploadChuncks.forEach((e:number)=>{
         alreadyUpChuncks[e]=1
       })
@@ -98,13 +89,14 @@ function uploadBigHook() {
       // formData.append('type','upload')
       formData.append('current',chunkIndex+'')
       // formData.append('total',fileArr.length+'')
-
-       axios({
-        url: `/bigFile/upload?md5Val=${md5Val}`,
-        method: "post",
-        data: formData,
-      }).then(data=>{
-        if (data.data.code == 200) {
+      uploadBigUp(md5Val,formData)
+      //  axios({
+      //   url: `/bigFile/upload?md5Val=${md5Val}`,
+      //   method: "post",
+      //   data: formData,
+      // })
+      .then(data=>{
+        if (data.code == 200) {
           if (preIndex < fileArr.length - 1) {
             ++NextIndex
             // state.rate = Math.round(((NextIndex ) / fileArr.length) * 100)
@@ -131,18 +123,9 @@ function uploadBigHook() {
 
 
   async function mergeFile() {
-    const param={
-      ext,
-      md5Val
-    }
-    const data = await axios(
-      {
-        url:`/bigFile/merge`,
-        method:'POST',
-        data:param
-      }
-    );
-    if (data.data.code == 200) {
+    const data = await uploadBigMerge(md5Val,ext)
+    
+    if (data.code == 200) {
       // state.rate = 100
       // state.form.videoUrl = data.data.data.url
       // state.showUploadProgress = false
@@ -152,7 +135,7 @@ function uploadBigHook() {
       //   state.rate = 0
       // })
     } else {
-      alert(data.data.info);
+      alert(data.msg);
     }
   }
   return {
