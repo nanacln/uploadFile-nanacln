@@ -327,9 +327,7 @@ app.post('/bigFile/check',(req,res)=>{
             return res.json({
               code: 200,
               msg: "获取成功！",
-              data:{
-								chunk: [],
-							}
+              data:[]
 							
             });
           }
