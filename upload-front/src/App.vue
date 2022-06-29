@@ -1,7 +1,6 @@
 <template>
   <div id="nav">
     <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
     <router-link to="/single">FORM-DATA</router-link> |
     <router-link to="/base64">BASE64</router-link> |
     <router-link to="/many">多文件上传</router-link> |

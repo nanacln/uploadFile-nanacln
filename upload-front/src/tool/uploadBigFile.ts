@@ -8,16 +8,19 @@ function uploadBigHook() {
     md5Val = "";
   const alreadyUpChuncks: { [propName: number]: number } = {};
   let startTime = 0;
-  async function uploadBig(file: File) {
+  async function uploadBig(file: File,type:number) {
     ext = file.name.substr(file.name.lastIndexOf(".") + 1);
     fileArr = sliceFile(file);
     md5Val = (await md5File([file])) as string;
     await checkUpload();
-    //多个请求并发
-    ManyUploadSlice();
-    //一次上传一个请求
-    // startTime=new Date().getTime()
-    // uploadSlice()
+    startTime=new Date().getTime()
+    if(type===1){
+      //一次上传一个请求
+      uploadSlice()
+    }else{
+       //多个请求并发
+      ManyUploadSlice();
+    }
   }
   // 切割文件
   function sliceFile(file: Blob) {
@@ -62,8 +65,6 @@ function uploadBigHook() {
     let preIndex = -1;
     let NextIndex = 0;
     const len = 5 < fileArr.length ? 5 : fileArr.length;
-    startTime = new Date().getTime();
-    console.log("start", startTime);
     for (let i = 0; i < len && !mergeFlag; i++) {
       singleUpload(++preIndex, i);
     }
@@ -113,6 +114,33 @@ function uploadBigHook() {
             }
           }
         });
+    }
+  }
+  async function uploadSlice(chunkIndex = 0) {
+    
+    if(chunkIndex===fileArr.length-1){
+      mergeFile()
+      return
+    }
+    if (alreadyUpChuncks[chunkIndex ]) {
+      ++chunkIndex;
+      // state.rate = Math.round(((chunkIndex ) / fileArr.length) * 100)
+      uploadSlice(chunkIndex + 1)
+      return
+    }
+    const formData = new FormData();
+      formData.append("file", fileArr[chunkIndex]);
+      formData.append("current", chunkIndex + "");
+      const data=await uploadBigUp(md5Val, formData)
+
+    if (data.code == 200) {
+      if (chunkIndex < fileArr.length - 1) {
+        ++chunkIndex;
+        // state.rate = Math.round(((chunkIndex ) / fileArr.length) * 100)
+        uploadSlice(chunkIndex);
+      } else {
+        mergeFile();
+      }
     }
   }
 
