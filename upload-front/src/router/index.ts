@@ -36,7 +36,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "drag" */'../views/UploadDrag.vue')
   },
   {
-    path: '/bigFile',
+    path: '/bigfile',
     name: 'BigFile',
     component: () => import(/* webpackChunkName: "big" */'../views/UploadBigfile.vue')
   }

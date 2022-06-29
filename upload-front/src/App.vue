@@ -6,7 +6,7 @@
     <router-link to="/base64">BASE64</router-link> |
     <router-link to="/many">多文件上传</router-link> |
     <router-link to="/drag">拖拽上传</router-link> |
-    <router-link to="/bigFile">大文件上传</router-link> |
+    <router-link to="/bigfile">大文件上传</router-link> |
   </div>
   <router-view/>
 </template>
