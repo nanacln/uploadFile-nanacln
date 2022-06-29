@@ -13,6 +13,7 @@ const formidable = require('formidable')
 const dirPath = path.join(__dirname, "./static/");
 
 const mergeFile = require('./tool/util');
+app.use('',express.static(path.join(__dirname, 'static')));
 
 app.listen(PORT, () => {
 	console.log(`serve is runnig at ${HOSTNAME}`);
