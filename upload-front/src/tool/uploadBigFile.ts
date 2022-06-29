@@ -117,8 +117,7 @@ function uploadBigHook() {
     }
   }
   async function uploadSlice(chunkIndex = 0) {
-    
-    if(chunkIndex===fileArr.length-1){
+    if(chunkIndex>=fileArr.length){
       mergeFile()
       return
     }

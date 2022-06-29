@@ -125,7 +125,6 @@ app.post('/upload_single', async (req, res) => {
 });
 
 app.post('/upload_single_base64', async (req, res) => {
-  console.log(req.body,8888);
 	let file = req.body.file;
 	let filename = req.body.filename;
 	let spark = new SparkMD5.ArrayBuffer(); // 根据文件内容,生成一个hash名字
