@@ -35,40 +35,11 @@ app.use(
 	})
 );
 app.use(bodyParser.json({limit: '10mb'})); // for parsing application/json
-// 延迟函数
-const delay = function (interval) {
-	typeof interval !== 'number' ? interval === 1000 : interval;
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			resolve();
-		}, interval);
-	});
-};
+
 
 // 基于multiparty插件实现文件上传处理 & form-data解析
 const uploadDir = `${__dirname}/static/upload`;
 const baseDir = path.resolve(__dirname, 'static');
-const multipartry_load = function (req, auto) {
-	typeof auto !== 'boolean' ? (auto = false) : null;
-	let config = {
-		maxFieldsSize: 200 * 1024 * 1024,
-	};
-	if (auto) config.uploadDir = uploadDir;
-	return new Promise(async (resolve, reject) => {
-		await delay(); //
-		// 用来将客户端formData 结果解析
-		new multipartry.Form(config).parse(req, (err, fields, files) => {
-			if (err) {
-				reject(err);
-				return;
-			}
-			resolve({
-				fields,
-				files,
-			});
-		});
-	});
-};
 
 // 检测文件是否已经存在
 const exists = function (path) {
@@ -81,20 +52,49 @@ const exists = function (path) {
 };
 
 app.post('/upload_single', async (req, res) => {
-	try {
-		let { files, fields } = await multipartry_load(req, true);
-		let file = (files.file && files.file[0]) || {};
+	const form = new formidable.IncomingForm()
+	let spark = new SparkMD5.ArrayBuffer()
+	form.parse(req, function (error, fields, files) {
+		if(error){
+			res.send({
+				code: 1,
+				msg:error,
+			});
+			return;
+		}
+		spark.append(files.file);
+		let suffix = /\.([0-9a-zA-Z]+)$/.exec(files.file.originalFilename)[1]
+		let name =
+			'/upload/' + spark.end() +'.'+ suffix
+		// fs.writeFileSync('static'+name, fs.readFileSync(files.file.filepath))
+		fs.writeFileSync(baseDir+name, fs.readFileSync(files.file.filepath))
 		res.send({
 			code: 0,
-			msg: '上传成功',
-			url: file.path.replace(baseDir, HOSTNAME),
-		});
-	} catch (err) {
-		res.send({
-			code: 1,
-			msg: err,
-		});
-	}
+			msg: '上次成功',
+			url: HOSTNAME+ name,
+		})
+	})
+	// const config = {
+	// 	maxFieldsSize: 200 * 1024 * 1024,
+	// 	uploadDir
+	// }
+	// new multipartry.Form(config).parse(req, (err, fields, files) => {
+	// 	if (err) {
+	// 		res.send({
+	// 			code: 1,
+	// 			msg: err,
+	// 		});
+	// 		return;
+	// 	}
+	// 	let file = (files.file && files.file[0]) || {};
+	// 	res.send({
+	// 		code: 0,
+	// 		msg: '上传成功',
+	// 		url: file.path.replace(baseDir, HOSTNAME),
+	// 	});
+	// });
+		
+	
 });
 
 app.post('/upload_single_base64', async (req, res) => {
