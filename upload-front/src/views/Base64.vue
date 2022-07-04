@@ -18,13 +18,16 @@
 import { defineComponent, ref } from 'vue'
 import {vueCropperElement} from '../tool/type'
 import {UploadBase64} from '../tool/api'
+import { ElMessage } from 'element-plus'
 export default defineComponent({
   setup() {
     let imgSrc=ref('')
     let visible=ref(false)
+    let filename=''
     const cropper=ref(null as unknown as vueCropperElement) 
     const changFile=(e:Event)=>{
       let file= ((e.target as HTMLInputElement).files as FileList)[0] 
+      filename=file.name
       const reader= new FileReader()
       reader.onload=function(evt){
         visible.value=true
@@ -34,10 +37,13 @@ export default defineComponent({
     }
     const base64Upload=()=>{
       cropper.value.getCropData((data:string) => {
-        UploadBase64({file:data,filename:(new Date).getTime()+'.jpg'})
+        UploadBase64({file:data,filename})
         .then(res=>{
           if(res.code===0){
-            alert('上传成功')
+            ElMessage({
+                message: '上传成功',
+                type: 'success',
+              })
           }
         })
       })

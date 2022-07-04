@@ -8,7 +8,6 @@ const app = express();
 const PORT = 8880;
 const HOST = 'http://127.0.0.1';
 const HOSTNAME = `${HOST}:${PORT}`;
-const FONTHOSTNAME = `${HOST}:${8000}`; // 前端起的服务
 const formidable = require('formidable')
 const dirPath = path.join(__dirname, "./static/");
 
@@ -48,7 +47,7 @@ const delay = function (interval) {
 
 // 基于multiparty插件实现文件上传处理 & form-data解析
 const uploadDir = `${__dirname}/static/upload`;
-const baseDir = path.resolve(__dirname, '../');
+const baseDir = path.resolve(__dirname, 'static');
 const multipartry_load = function (req, auto) {
 	typeof auto !== 'boolean' ? (auto = false) : null;
 	let config = {
@@ -81,32 +80,6 @@ const exists = function (path) {
 	});
 };
 
-// 创建文件并写入到指定的目录 & 返回客户端结果
-const writeFile = function (res, path, file, filename, stream) {
-	return new Promise((resolve, reject) => {
-		if (stream) {
-		}
-		fs.writeFile(path, file, (err) => {
-			if (err) {
-				reject(err);
-				res.send({
-					code: 1,
-					msg: err,
-				});
-				return;
-			}
-			resolve();
-			res.send({
-				code: 0,
-				msg: '上传成功',
-				filename: filename,
-				url: path.replace(baseDir, FONTHOSTNAME),
-			});
-		});
-	});
-};
-
-
 app.post('/upload_single', async (req, res) => {
 	try {
 		let { files, fields } = await multipartry_load(req, true);
@@ -114,8 +87,7 @@ app.post('/upload_single', async (req, res) => {
 		res.send({
 			code: 0,
 			msg: '上传成功',
-			originFilename: file.originFilename,
-			url: file.path.replace(baseDir, FONTHOSTNAME),
+			url: file.path.replace(baseDir, HOSTNAME),
 		});
 	} catch (err) {
 		res.send({
@@ -136,8 +108,8 @@ app.post('/upload_single_base64', async (req, res) => {
 	file = file.replace(/^data:image\/\w+;base64,/, '');
 	file = Buffer.from(file, 'base64'); // 将base64转成正常的文件格式
 	spark.append(file);
-	path = `${uploadDir}/${spark.end()}.${suffix}`;
-	await delay();
+	const newFileName=`${spark.end()}.${suffix}`
+	path = `${uploadDir}/${newFileName}`;
 	// 检测是否存在
 	isExists = await exists(path);
 	if (isExists) {
@@ -145,12 +117,25 @@ app.post('/upload_single_base64', async (req, res) => {
 			code: 0,
 			msg: 'file is exists',
 			urlname: filename,
-			url: path.replace(baseDir, FONTHOSTNAME),
+			url: HOSTNAME+`/upload/${newFileName}`,
 		});
 		return;
 	}
-	// fs.writeFile(res)
-	writeFile(res, path, file, filename, false);
+	fs.writeFile(path, file, (err) => {
+		if (err) {
+			res.send({
+				code: 1,
+				msg: err,
+			});
+			return;
+		}
+		res.send({
+			code: 0,
+			msg: '上传成功',
+			filename: filename,
+			url: HOSTNAME+`/upload/${newFileName}`,
+		});
+	});
 });
 
 
@@ -219,7 +204,7 @@ app.post('/bigFile/merge',(req,res)=>{
         code: 200,
         msg: '文件合并成功！',
         data: {
-					url: `/doc/${md5Val}.${ext}`
+					url: `${HOSTNAME}/doc/${md5Val}.${ext}`
 				}
       })
     } else {
