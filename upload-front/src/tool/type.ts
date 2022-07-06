@@ -14,7 +14,7 @@ export type reqBase64 = {
   file: string,
   filename: string
 }
-export type aa = {
-  name: string,
-  age: number
+export type ManyUploadState = {
+  imgUrls: string[],
+  imgUrls2: string[]
 }

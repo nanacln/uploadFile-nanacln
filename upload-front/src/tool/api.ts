@@ -26,3 +26,12 @@ export function uploadBigUp(md5Val: string, param: FormData): Promise<resBase> {
 export function uploadBigMerge(md5Val: string, ext: string): Promise<resBase> {
   return request.post('/bigFile/merge', { md5Val, ext })
 }
+
+export function UploadMultipe(param: FormData, other?: AxiosRequestConfig): Promise<resBase> {
+  const config =Object.assign({
+    headers: {
+        'Content-Type': 'multipart/form-data',
+    },
+  },other)
+  return request.post('/upload_multipe', param,config)
+}

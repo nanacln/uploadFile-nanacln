@@ -1,12 +1,21 @@
 <template>
   <div>
-    <h2>多文件上传</h2>
+    <h2>多文件上传-多请求</h2>
     <input type="file" multiple  @change="uploadMany">
+    <br>
+    <h2>多文件上传-单一请求</h2>
+    <input type="file" multiple  @change="uploadManyFiles">
   </div>
 </template>
 <script lang="ts" setup>
-import { UploadSingle } from "../tool/api";
+import { UploadSingle,UploadMultipe } from "../tool/api";
 import { ElMessage } from 'element-plus'
+import { reactive } from "vue-demi";
+import {ManyUploadState} from '../tool/type'
+  const state=reactive<ManyUploadState>({
+    imgUrls:[],
+    imgUrls2:[]
+  })
   const uploadMany=(e:Event)=>{
     const upFiles = [...(e.target as HTMLInputElement).files as FileList]
     const _files= upFiles.map((item:File)=>{
@@ -36,5 +45,25 @@ import { ElMessage } from 'element-plus'
         type: 'error',
       })
     })
+  }
+  const uploadManyFiles=(e:Event)=>{
+    const upFiles = [...(e.target as HTMLInputElement).files as FileList]
+    const formData=new FormData()
+    upFiles.map((item:File)=>{
+      formData.append("file", item);
+    })
+    UploadMultipe(formData)
+      .then((res) => {
+        const { code,url } = res;
+        if (code === 0) {
+          ElMessage({
+            message: '批量上传成功',
+            type: 'success',
+          })
+          state.imgUrls2=(url as string).split(',')
+        }else{
+          Promise.reject('上传失败')
+        }
+      })
   }
 </script>

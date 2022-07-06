@@ -12,12 +12,6 @@ const formidable = require('formidable')
 const dirPath = path.join(__dirname, "./static/");
 
 const mergeFile = require('./tool/util');
-app.use('',express.static(path.join(__dirname, 'static')));
-
-app.listen(PORT, () => {
-	console.log(`serve is runnig at ${HOSTNAME}`);
-});
-
 app.all('*',(req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Headers','Origin,X-Requested-With,Content-Type,Accept');
@@ -26,6 +20,13 @@ app.all('*',(req, res, next) => {
 	res.header('Content-Type','application/json;charset=utf-8')
 	next();
 });
+app.use('',express.static(path.join(__dirname, 'static')));
+
+app.listen(PORT, () => {
+	console.log(`serve is runnig at ${HOSTNAME}`);
+});
+
+
 
 
 app.use(
