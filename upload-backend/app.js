@@ -17,7 +17,7 @@ app.all('*',(req, res, next) => {
 	res.header('Access-Control-Allow-Headers','Origin,X-Requested-With,Content-Type,Accept');
 	res.header('Access-Control-Allow-Methods','PUT,POST,GET,DELETE,OPTIONS');
 	res.header('X-Powered-By','3.2.1')
-	res.header('Content-Type','application/json;charset=utf-8')
+	// res.header('Content-Type','application/json;charset=utf-8')
 	next();
 });
 app.use('',express.static(path.join(__dirname, 'static')));
@@ -54,7 +54,6 @@ const exists = function (path) {
 
 app.post('/upload_single', async (req, res) => {
 	const form = new formidable.IncomingForm()
-	let spark = new SparkMD5.ArrayBuffer()
 	form.parse(req, function (error, fields, files) {
 		if(error){
 			res.send({
@@ -63,10 +62,9 @@ app.post('/upload_single', async (req, res) => {
 			});
 			return;
 		}
-		spark.append(files.file);
 		let suffix = /\.([0-9a-zA-Z]+)$/.exec(files.file.originalFilename)[1]
 		let name =
-			'/upload/' + spark.end() +'.'+ suffix
+			'/upload/' + new Date().getTime() +'.'+ suffix
 		// fs.writeFileSync('static'+name, fs.readFileSync(files.file.filepath))
 		fs.writeFileSync(baseDir+name, fs.readFileSync(files.file.filepath))
 		res.send({
@@ -75,28 +73,35 @@ app.post('/upload_single', async (req, res) => {
 			url: HOSTNAME+ name,
 		})
 	})
-	// const config = {
-	// 	maxFieldsSize: 200 * 1024 * 1024,
-	// 	uploadDir
-	// }
-	// new multipartry.Form(config).parse(req, (err, fields, files) => {
-	// 	if (err) {
-	// 		res.send({
-	// 			code: 1,
-	// 			msg: err,
-	// 		});
-	// 		return;
-	// 	}
-	// 	let file = (files.file && files.file[0]) || {};
-	// 	res.send({
-	// 		code: 0,
-	// 		msg: '上传成功',
-	// 		url: file.path.replace(baseDir, HOSTNAME),
-	// 	});
-	// });
+	
 		
 	
 });
+app.post('/upload_multipe',(req,res)=>{
+	const config = {
+		maxFieldsSize: 200 * 1024 * 1024,
+		uploadDir
+	}
+	new multipartry.Form(config).parse(req, (err, fields, files) => {
+		if (err) {
+			res.send({
+				code: 1,
+				msg: err,
+			});
+			return;
+		}
+		let fileArr = files.file ;
+		let urls=''
+		fileArr.forEach((v,i)=>{
+			urls+=(i==0?'':',')+v.path.replace(baseDir, HOSTNAME).replace(/\\/g,'/')
+		})
+		res.send({
+			code: 0,
+			msg: '上传成功',
+			url: urls,
+		});
+	});
+})
 
 app.post('/upload_single_base64', async (req, res) => {
 	let file = req.body.file;
