@@ -1,7 +1,9 @@
 import SparkMD5 from "spark-md5";
+import {BigFileState} from '@/tool/type'
+// import {nextTick} from 'vue'
 
 import { uploadBigCheck, uploadBigUp, uploadBigMerge } from "./api";
-function uploadBigHook() {
+function uploadBigHook( state:BigFileState) {
   let ext = "",
     fileArr: Array<Blob> = [],
     uploadChuncks = [],
@@ -73,14 +75,14 @@ function uploadBigHook() {
         mergeFlag = true;
         NextIndex = 0;
         preIndex = -1;
-        mergeFile();
+        mergeFile(2);
         return;
       }
       if (alreadyUpChuncks[chunkIndex]) {
         ++chunkIndex;
         ++preIndex;
         ++NextIndex;
-        // state.rate = Math.round(((NextIndex ) / fileArr.length) * 100)
+        state.rate2 = Math.round(((NextIndex ) / fileArr.length) * 100)
         singleUpload(preIndex, i);
         return;
       }
@@ -99,7 +101,7 @@ function uploadBigHook() {
           if (data.code == 200) {
             if (preIndex < fileArr.length - 1) {
               ++NextIndex;
-              // state.rate = Math.round(((NextIndex ) / fileArr.length) * 100)
+              state.rate2 = Math.round(((NextIndex ) / fileArr.length) * 100)
               singleUpload(++preIndex, i);
             } else {
               ++NextIndex;
@@ -107,9 +109,9 @@ function uploadBigHook() {
                 mergeFlag = true;
                 NextIndex = 0;
                 preIndex = -1;
-                mergeFile();
+                mergeFile(2);
               } else {
-                // state.rate = Math.round(((NextIndex ) / fileArr.length) * 100)
+                state.rate2 = Math.round(((NextIndex ) / fileArr.length) * 100)
               }
             }
           }
@@ -118,12 +120,12 @@ function uploadBigHook() {
   }
   async function uploadSlice(chunkIndex = 0) {
     if(chunkIndex>=fileArr.length){
-      mergeFile()
+      mergeFile(1)
       return
     }
     if (alreadyUpChuncks[chunkIndex ]) {
       ++chunkIndex;
-      // state.rate = Math.round(((chunkIndex ) / fileArr.length) * 100)
+      state.rate = Math.round(((chunkIndex ) / fileArr.length) * 100)
       uploadSlice(chunkIndex + 1)
       return
     }
@@ -135,25 +137,33 @@ function uploadBigHook() {
     if (data.code == 200) {
       if (chunkIndex < fileArr.length - 1) {
         ++chunkIndex;
-        // state.rate = Math.round(((chunkIndex ) / fileArr.length) * 100)
+        state.rate = Math.round(((chunkIndex ) / fileArr.length) * 100)
         uploadSlice(chunkIndex);
       } else {
-        mergeFile();
+        mergeFile(1);
       }
     }
   }
 
-  async function mergeFile() {
+  async function mergeFile(type:number) {
     const data = await uploadBigMerge(md5Val, ext);
 
     if (data.code == 200) {
-      // state.rate = 100
-      // state.form.videoUrl = data.data.data.url
-      // state.showUploadProgress = false
+      
+      if(type===1){
+        state.rate = 100
+        state.url=data.url as string
+        state.showUploadProgress=true
+        state.time=new Date().getTime() - startTime
+      }else{
+        state.rate2 = 100
+        state.url2=data.url as string
+        state.showUploadProgress2=true
+        state.time2=new Date().getTime() - startTime
+      }
       console.log("end", new Date().getTime() - startTime);
       // nextTick(() => {
-      //   state.currentRate = 0
-      //   state.rate = 0
+      //   type===1?state.rate=0:state.rate2=0
       // })
     } else {
       alert(data.msg);

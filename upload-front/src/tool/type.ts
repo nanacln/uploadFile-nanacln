@@ -18,3 +18,13 @@ export type ManyUploadState = {
   imgUrls: string[],
   imgUrls2: string[]
 }
+export type BigFileState={
+  rate:number,
+  rate2:number,
+  time:number,
+  url:string,
+  url2:string,
+  time2:number,
+  showUploadProgress:boolean,
+  showUploadProgress2:boolean
+}
