@@ -1,7 +1,9 @@
 <template>
   <div>
     <h1>头像裁剪-base64格式上传</h1>
-    <input type="file" @change="changFile">
+    <el-button class="upload-btnBox" type="primary">
+      选择文件<input type="file" class="input_file" @change="changFile" />
+    </el-button>
     <br>
     <br>
     <div class="cropper-box">
@@ -11,7 +13,9 @@
         :autoCrop="true"
       ></vueCropper>
     </div>
-    <div @click="base64Upload">裁剪</div>
+    <br>
+    <br>
+    <el-button @click="base64Upload" type="warning">裁剪</el-button>
   </div>
 </template>
 <script lang="ts">

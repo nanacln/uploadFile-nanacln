@@ -2,20 +2,27 @@
   <div>
     <h1>单一文件上传-FORM DATA</h1>
     <div>
-      <input type="file" @change="uploadFile" />
+      <el-button class="upload-btnBox" type="primary">
+        选择文件<input type="file" class="input_file" @change="uploadFile" />
+      </el-button>
+      
     </div>
     <br>
     <br>
     <div>
       <h2>压缩上传</h2>
-      <input type="file" @change="uploadFile($event,true)" />
+      <el-button class="upload-btnBox" type="primary">
+        选择文件<input type="file" class="input_file" @change="uploadFile($event,true)" />
+      </el-button>
     </div>
     <br>
     <br>
     <div>
       <h2>进度条</h2>
-      <input type="file" @change="uploadFile($event,false,true)" />
-      <div class="progress"></div>
+      <el-button class="upload-btnBox" type="primary">
+        选择文件<input type="file" class="input_file" @change="uploadFile($event,false,true)" />
+      </el-button>
+      <br><br>
       <el-progress :percentage="progress" />
     </div>
   </div>
@@ -35,6 +42,7 @@ export default defineComponent({
       } else{
         upload(upFile)
       }
+      (file.target as HTMLInputElement).value=''
     };
      interface fileQuality{
        quality:number

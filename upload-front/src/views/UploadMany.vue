@@ -1,14 +1,18 @@
 <template>
   <div>
     <h2>多文件上传-多请求</h2>
-    <input type="file" multiple  @change="uploadMany">
+    <el-button class="upload-btnBox" type="primary">
+      选择文件<input type="file" class="input_file"  multiple  @change="uploadMany" />
+    </el-button>
     <div style="margin-top:30px;">
       <el-image v-for="url in state.imgUrls" :key="url" :src="url" style="width: 100px; height: 100px" :preview-src-list="state.imgUrls"
       :initial-index="0" fit="cover"  lazy />
     </div>
     <br>
     <h2>多文件上传-单一请求</h2>
-    <input type="file" multiple  @change="uploadManyFiles">
+    <el-button class="upload-btnBox" type="primary">
+      选择文件<input type="file" class="input_file"  multiple  @change="uploadManyFiles" />
+    </el-button>
     
     <div style="margin-top:30px;">
       <el-image v-for="url in state.imgUrls2" :key="url" :src="url" style="width: 100px; height: 100px" :preview-src-list="state.imgUrls2"

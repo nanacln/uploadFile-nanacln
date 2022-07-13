@@ -5,7 +5,8 @@
 import axios ,{AxiosRequestHeaders}from 'axios'
 import qs from 'qs'
 const instance = axios.create();
-instance.defaults.baseURL = 'http://106.14.172.134:8880'
+// instance.defaults.baseURL = 'http://106.14.172.134:8880'
+instance.defaults.baseURL = 'http://127.0.0.1:8880'
 
  instance.defaults.transformRequest = (data, headers) => {
      const contentType = (headers as AxiosRequestHeaders)['Content-Type']

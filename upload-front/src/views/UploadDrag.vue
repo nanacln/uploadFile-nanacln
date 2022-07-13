@@ -85,6 +85,7 @@ const dragLeave=(e:Event)=>{
   text-align: center;
   line-height: 200px;
   color:#666;
+  margin:0 auto;
   &.active{
     border-color:#409eff;
   }

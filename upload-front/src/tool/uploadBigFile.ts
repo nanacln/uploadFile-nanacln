@@ -1,9 +1,8 @@
 import SparkMD5 from "spark-md5";
 import {BigFileState} from '@/tool/type'
-// import {nextTick} from 'vue'
 
 import { uploadBigCheck, uploadBigUp, uploadBigMerge } from "./api";
-function uploadBigHook( state:BigFileState) {
+function uploadBigHook( state:BigFileState):{uploadBig:(file:File,type:number)=>void} {
   let ext = "",
     fileArr: Array<Blob> = [],
     uploadChuncks = [],
@@ -18,9 +17,11 @@ function uploadBigHook( state:BigFileState) {
     startTime=new Date().getTime()
     if(type===1){
       //一次上传一个请求
+      state.rate=0
       uploadSlice()
     }else{
        //多个请求并发
+       state.rate2=0
       ManyUploadSlice();
     }
   }
