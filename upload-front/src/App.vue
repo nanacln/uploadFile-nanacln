@@ -1,12 +1,32 @@
 <template>
-  <div id="nav">
+  <!-- <div id="nav">
     <router-link to="/">Home</router-link> |
     <router-link to="/single">FORM-DATA</router-link> |
-    <router-link to="/base64">BASE64</router-link> |
+    <router-link to="/base64">base64</router-link> |
     <router-link to="/many">多文件上传</router-link> |
     <router-link to="/drag">拖拽上传</router-link> |
     <router-link to="/bigfile">大文件上传</router-link> |
-  </div>
+  </div> -->
+  <el-menu mode="horizontal" :router="true">
+    <el-menu-item index="/">
+      <span>Home</span>
+    </el-menu-item>
+    <el-menu-item index="/single">
+      <span>FORM-DATA</span>
+    </el-menu-item>
+    <el-menu-item index="/base64">
+      <span>base64</span>
+    </el-menu-item>
+    <el-menu-item index="/many">
+      <span>多文件上传</span>
+    </el-menu-item>
+    <el-menu-item index="/drag">
+      <span>拖拽上传</span>
+    </el-menu-item>
+    <el-menu-item index="/bigfile">
+      <span>大文件上传</span>
+    </el-menu-item>
+  </el-menu>
   <router-view/>
 </template>
 
