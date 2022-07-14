@@ -12,7 +12,10 @@
       <span>Home</span>
     </el-menu-item>
     <el-menu-item index="/single">
-      <span>FORM-DATA</span>
+      <span>普通上传</span>
+    </el-menu-item>
+    <el-menu-item index="/form">
+      <span>form表单</span>
     </el-menu-item>
     <el-menu-item index="/base64">
       <span>base64</span>
