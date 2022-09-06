@@ -6,8 +6,8 @@ const SparkMD5 = require('spark-md5');
 const path = require('path');
 const app = express();
 const PORT = 8880;
-const HOST = 'http://127.0.0.1';
-// const HOST = 'http://106.14.172.134'
+// const HOST = 'http://127.0.0.1';
+const HOST = 'http://106.14.172.134'
 const HOSTNAME = `${HOST}:${PORT}`;
 const formidable = require('formidable')
 const dirPath = path.join(__dirname, "./static/");
@@ -260,4 +260,7 @@ app.post('/bigFile/upload',(req,res)=>{
     });
   }
 	upload()
+})
+app.get('/list',(req,res)=>{
+	res.send({code:1,data:'123'})
 })
