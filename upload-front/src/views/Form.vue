@@ -1,6 +1,6 @@
 <template>
   <div style="margin:40px">
-    <form action="http://127.0.0.1:8880/upload_single" method="post" enctype="multipart/form-data" target="form">
+    <form action="http://127.0.0.1:8880/up/upload_single" method="post" enctype="multipart/form-data" target="form">
       <el-button class="upload-btnBox" type="primary">
         选择文件<input type="file" name="file" class="input_file" @change="submit" />
       </el-button>
